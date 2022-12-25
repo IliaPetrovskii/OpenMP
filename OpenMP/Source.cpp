@@ -4,15 +4,13 @@
 #include <time.h>
 #include <omp.h>
 
-#define N1 666 //Количество строк матрицы A
-#define N2 666 //Количество столбцов матрицы A и количество строк матрицы B
-#define N3 666 //Количество столбцов матрицы B
+#define N1 1000 //Количество строк матрицы A
+#define N2 1000 //Количество столбцов матрицы A и количество строк матрицы B
+#define N3 1000 //Количество столбцов матрицы B
 
 void fillMatrix(); //Заполнить матрицы, которые будут перемножаться
 void printMatrix(); //Вывести матрицы
 
-int rank; //Ранг процессов
-int size; //Количество процессов
 int i, j, k; //Вспомогательные переменные
 double matrixA[N1][N2]; //Объявление матрицы A
 double matrixB[N2][N3]; //Объявление матрицы B
@@ -27,14 +25,14 @@ int main(int argc, char* argv[])
 	{
 		//Устанавливаем число потоков
 		omp_set_num_threads(t);
-		#pragma omp parallel shared(matrixA, matrixB, matrixRes) private(i, j, k)
 		{
-			#pragma omp for shedule (static)
 			start_time = omp_get_wtime();
+            #pragma omp parallel for shared(matrixA, matrixB, matrixRes) private(i, j, k)
 			for (i = 0; i < N1; i++) {
 				for (j = 0; j < N2; j++) {
+					matrixRes[i][j] = 0;
 					for (k = 0; k < N3; k++) {
-						matrixRes[i][j] = (matrixA[i][k] * matrixB[k][j]);
+						matrixRes[i][j] += (matrixA[i][k] * matrixB[k][j]);
 					}
 				}
 			}
